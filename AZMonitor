@@ -1,10 +1,24 @@
+asach:- vm2 pass:- Monitor@12345
+
 By default metrics for resource
 u can create alerts based on these metrics.
 
 
-Diagnostic settings:- enable guest level monitoring additional capabilities.
+Diagnostic settings under ur azure vm:- enable guest level monitoring additional capabilities.
 it requires python 2 and a SA in same region of ur vm.
 u need to Install AMA agent on the server using something like.
+az vm extension set --name AzureMonitorLinuxAgent --publisher Microsoft.Azure.Monitor --ids <vm-resource-id> --enable-auto-upgrade true
+specify below resource id.
 /subscriptions/5b8ab9e9-05ae-4317-80d9-873b9c409693/resourceGroups/tomcat-iaas-12-2020/providers/Microsoft.Compute/virtualMachines/tomcat-vm
 
+then u need some detination to send the above data from diagnostic setting.
+create a LAW
+
+then create a DCR to send data to the above workspace.
+(go to VM-->Insights--Monitor configuration-->create new rule to send it to LAW)
+
+once done go to vm-->logs or this LAW and query heartbeat u would see the data being send by AMA to this new workspace.
+
 then Enable DCR and DCE
+
+
