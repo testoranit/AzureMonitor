@@ -21,4 +21,49 @@ once done go to vm-->logs or this LAW and query heartbeat u would see the data b
 
 then Enable DCR and DCE
 
+**************
+Create App insights
+note down Instrumentation key.
 
+Install the javaagent.jar on the app server in lib directory of app server(eg:- tomcat/lib).
+
+ use the systemd service file (tomcat9.service) to include the Java Agent JAR file for auto-instrumentation.
+
+eg:=[Unit]
+Description=Apache Tomcat Web Application Container
+After=network.target
+
+[Service]
+Type=forking
+
+Environment=JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
+Environment=CATALINA_PID=/opt/apps10/apache-tomcat-9.0.87/tomcat9.pid
+Environment=CATALINA_HOME=/opt/apps10/apache-tomcat-9.0.87
+Environment=CATALINA_BASE=/opt/apps10/apache-tomcat-9.0.87
+Environment='CATALINA_OPTS=-Xms8192M -Xmx8192M -server -XX:+UseParallelGC -javaagent:/opt/apps10/apache-tomcat-9.0.87/lib/ApplicationInsightsAgent.jar'
+Environment='JAVA_OPTS=-Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom'
+
+ExecStart=/opt/apps10/apache-tomcat-9.0.87/bin/startup.sh
+ExecStop=/opt/apps10/apache-tomcat-9.0.87/bin/shutdown.sh
+
+User=tomcat
+Group=tomcat
+UMask=0007
+RestartSec=10
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+
+Instrumentation Syntax:-
+
+https://learn.microsoft.com/en-us/azure/azure-monitor/app/sdk-connection-string?tabs=java
+create applicationinsights.json in tomcat/lib directory and add below:-
+
+{
+  "connectionString": "InstrumentationKey=00000000-0000-0000-0000-000000000000;IngestionEndpoint=https://{region}.in.applicationinsights.azure.com/;LiveEndpoint=https://{region}.livediagnostics.monitor.azure.com/"
+}
+
+
+U can now see data in APp insights..
